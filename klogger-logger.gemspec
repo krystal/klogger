@@ -2,6 +2,7 @@
 
 require File.expand_path('lib/klogger/version', __dir__)
 
+# rubocop:disable Gemspec/RequireMFA
 Gem::Specification.new do |s|
   s.name          = 'klogger-logger'
   s.description   = 'A simple Ruby logger'
@@ -16,5 +17,5 @@ Gem::Specification.new do |s|
   s.licenses      = ['MIT']
   s.add_runtime_dependency('json')
   s.add_runtime_dependency('rouge', '>= 3.30', '< 5.0')
-  s.metadata['rubygems_mfa_required'] = 'true'
 end
+# rubocop:enable Gemspec/RequireMFA
