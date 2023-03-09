@@ -83,7 +83,7 @@ In many cases you won't want to keep your log data on a local disk or within STD
 ```ruby
 # This is just an example class. You can create whatever class you want here and it'll be called
 # with the call method.
-class GraylogDestination < Klogger::Destination
+class GraylogDestination
 
   def initialize(host, port)
     @notifier = GELF::Notifier.new(host, port)
