@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     klogger-logger (0.0.0.dev)
+      concurrent-ruby (>= 1.0, < 2.0)
       json
       rouge (>= 3.30, < 5.0)
 
@@ -11,6 +12,7 @@ GEM
     ast (2.4.2)
     backport (1.2.0)
     benchmark (0.2.1)
+    concurrent-ruby (1.2.2)
     diff-lcs (1.5.0)
     e2mmap (0.1.0)
     jaro_winkler (1.5.4)

@@ -4,6 +4,7 @@ require 'logger'
 require 'klogger/formatters/json'
 require 'klogger/formatters/simple'
 require 'klogger/formatters/go'
+require 'concurrent/atomic/thread_local_var'
 
 module Klogger
   class Logger < ::Logger
@@ -23,6 +24,7 @@ module Klogger
       @name = name
       @extra = extra
       @destinations = []
+      @groups = Concurrent::ThreadLocalVar.new([])
 
       super(destination)
       self.formatter = FORMATTERS[formatter].new(highlight: highlight)
@@ -43,9 +45,11 @@ module Klogger
 
     def group(**additional)
       groups << additional
+    def group(**tags)
+      @groups.value += [tags]
       yield
     ensure
-      groups.pop
+      @groups.value.pop
     end
 
     def silence!
@@ -75,10 +79,6 @@ module Klogger
     end
 
     private
-
-    def groups
-      @groups ||= []
-    end
 
     def add(severity, message = nil, progname = nil, **extra, &block)
       return if silenced?
@@ -114,7 +114,7 @@ module Klogger
       payload.delete(:message) if payload[:message].nil?
       payload.compact!
 
-      groups.each { |group| payload.merge!(group) }
+      @groups.value.each { |group| payload.merge!(group) }
       payload
     end
     # rubocop:enable Metrics/AbcSize

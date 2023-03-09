@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.authors       = ['Adam Cooke']
   s.email         = ['adam@krystal.uk']
   s.licenses      = ['MIT']
+  s.add_runtime_dependency('concurrent-ruby', '>= 1.0', '< 2.0')
   s.add_runtime_dependency('json')
   s.add_runtime_dependency('rouge', '>= 3.30', '< 5.0')
 end

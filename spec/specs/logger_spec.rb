@@ -62,6 +62,31 @@ module Klogger
             end
           end
 
+          it 'ensures thread safety with groups' do
+            thread = Thread.start do
+              logger.group(set_in_thread: '123') do
+                logger.public_send(severity, 'Hello!')
+                expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
+                                              logger: 'example',
+                                              message: 'Hello!', set_in_thread: '123' }.to_json + "\n")
+
+                # keep the thread alive until we kill it later
+                sleep 1
+              end
+            end
+            sleep 0.1
+            logger.group(foo: 'bar') do
+              output.truncate(0)
+              output.rewind
+              logger.public_send(severity, 'Hello!')
+              expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
+                                            logger: 'example',
+                                            message: 'Hello!', foo: 'bar' }.to_json + "\n")
+            end
+          ensure
+            thread.kill
+          end
+
           it 'includes nested group attributes' do
             logger.group(level1: 'a') do
               logger.group(level2: 'b') do
