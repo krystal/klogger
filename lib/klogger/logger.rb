@@ -11,7 +11,7 @@ module Klogger
 
     attr_reader :name
     attr_reader :destinations
-    attr_reader :extra
+    attr_reader :tags
 
     LEVELS = [:debug, :info, :warn, :error, :fatal].freeze
     FORMATTERS = {
@@ -20,9 +20,9 @@ module Klogger
       go: Formatters::Go
     }.freeze
 
-    def initialize(name, destination: $stdout, formatter: :json, highlight: false, extra: {})
+    def initialize(name, destination: $stdout, formatter: :json, highlight: false, tags: {})
       @name = name
-      @extra = extra
+      @tags = tags
       @destinations = []
       @groups = Concurrent::ThreadLocalVar.new([])
 
@@ -30,21 +30,19 @@ module Klogger
       self.formatter = FORMATTERS[formatter].new(highlight: highlight)
     end
 
-    def exception(exception, message = nil, **additional)
+    def exception(exception, message = nil, **tags)
       error({ message: message,
               exception: exception.class.name,
               exception_message: exception.message,
-              backtrace: exception.backtrace[0, 4].join("\n") }.merge(additional))
+              backtrace: exception.backtrace[0, 4].join("\n") }.merge(tags))
     end
 
     LEVELS.each do |level|
-      define_method(level) do |message = nil, progname = nil, **additional, &block|
-        add(Logger.const_get(level.to_s.upcase), message, progname, **additional, &block)
+      define_method(level) do |message = nil, progname = nil, **tags, &block|
+        add(Logger.const_get(level.to_s.upcase), message, progname, **tags, &block)
       end
     end
 
-    def group(**additional)
-      groups << additional
     def group(**tags)
       @groups.value += [tags]
       yield
@@ -80,13 +78,13 @@ module Klogger
 
     private
 
-    def add(severity, message = nil, progname = nil, **extra, &block)
+    def add(severity, message = nil, progname = nil, **tags, &block)
       return if silenced?
 
       severity ||= Logger::UNKNOWN
       return if severity < level
 
-      payload = create_payload(severity, message, extra)
+      payload = create_payload(severity, message, tags)
 
       @destinations.each do |destination|
         destination.call(self, payload.dup)
@@ -100,9 +98,9 @@ module Klogger
     end
 
     # rubocop:disable Metrics/AbcSize
-    def create_payload(severity, message, extra)
+    def create_payload(severity, message, tags)
       payload = { time: Time.now.to_s, severity: LEVELS[severity]&.to_s, logger: @name }
-      payload.merge!(@extra)
+      payload.merge!(@tags)
 
       if message.is_a?(Hash)
         payload.merge!(message)
@@ -110,7 +108,7 @@ module Klogger
         payload[:message] = message
       end
 
-      payload.merge!(extra)
+      payload.merge!(tags)
       payload.delete(:message) if payload[:message].nil?
       payload.compact!
 

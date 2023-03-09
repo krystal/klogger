@@ -44,6 +44,9 @@ logger = Klogger.new('api-requests', formatter: :simple)
 # Disable coloured output (likely desired for production use)
 logger = Klogger.new('api-requests', color: false)
 
+# Add some extra tags to all log entries for this logger
+logger = Klogger.new('api-requests', tags: { app: 'my-app' })
+
 # Log a simple message to the logger
 logger.info("Received API request from 1.2.3.4 for /api/v1/users") # => {"time":"2023-03-09 11:56:37 +0000","severity":"info","logger":"example","message":"Received API request from 1.2.3.4 for /api/v1/users"}
 
@@ -90,7 +93,8 @@ class GraylogDestination
   end
 
   def call(logger, payload)
-    @notifer.notify!(facility: "my-app", **payload.delete)
+    message = payload.delete(:message)
+    @notifer.notify!(facility: "my-app", short_message: message, **payload)
   end
 
 end

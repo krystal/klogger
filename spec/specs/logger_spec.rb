@@ -37,8 +37,8 @@ module Klogger
             end
           end
 
-          it 'includes any additional attributes included for the logger before the message' do
-            logger = described_class.new('example', destination: output, extra: { foo: 'bar' })
+          it 'includes any tags included for the logger before the message' do
+            logger = described_class.new('example', destination: output, tags: { foo: 'bar' })
             Timecop.freeze do
               logger.public_send(severity, 'Hello, world!')
               expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
@@ -46,7 +46,7 @@ module Klogger
             end
           end
 
-          it 'includes additional attributes specified on the instance group after the message' do
+          it 'includes tags specified on the instance group after the message' do
             logger.group(foo: 'bar') do
               logger.public_send(severity, 'Hello, world!')
               expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
@@ -54,7 +54,7 @@ module Klogger
             end
           end
 
-          it 'includes additional attributes specified on the instance group along with other structured data' do
+          it 'includes tags specified on the instance group along with other structured data' do
             logger.group(foo: 'bar') do
               logger.public_send(severity, baz: 'qux')
               expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
