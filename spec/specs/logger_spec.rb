@@ -34,6 +34,24 @@ module Klogger
                                           logger: 'example', message: 'Hello world',
                                           foo: 'bar' }.to_json + "\n")
           end
+
+          it 'logs the result of a block as a message' do
+            logger.public_send(severity) { 'Hello world!' }
+            expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
+                                          logger: 'example', message: 'Hello world!' }.to_json + "\n")
+          end
+
+          it 'logs the result of a block as a message combined with an provided message' do
+            logger.public_send(severity, 'Test') { 'Hello world!' }
+            expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
+                                          logger: 'example', message: 'Test: Hello world!' }.to_json + "\n")
+          end
+
+          it 'logs the result of a block as a message combined with an provided message and tags' do
+            logger.public_send(severity, 'Test', abc: 'def') { 'Hello world!' }
+            expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
+                                          logger: 'example', message: 'Test: Hello world!',
+                                          abc: 'def' }.to_json + "\n")
           end
 
           it 'includes any tags included for the logger before the message' do

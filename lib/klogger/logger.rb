@@ -84,16 +84,14 @@ module Klogger
       severity ||= Logger::UNKNOWN
       return if severity < level
 
-      payload = create_payload(severity, message, tags)
-
-      @destinations.each do |destination|
-        destination.call(self, payload.dup)
-      rescue StandardError => e
-        # If something goes wrong in here, we don't want to break the application
-        # so we will rescue that and we'll just use standard warn.
-        Kernel.warn "Error while sending payload to destination (#{e.class}): #{e.message}"
+      if message && block_given?
+        message = "#{message}: #{block.call}"
+      elsif block_given?
+        message = block.call
       end
 
+      payload = create_payload(severity, message, tags)
+      call_destinations(payload)
       super(severity, payload, progname, &block)
     end
 
@@ -116,6 +114,16 @@ module Klogger
       payload
     end
     # rubocop:enable Metrics/AbcSize
+
+    def call_destinations(payload)
+      @destinations.each do |destination|
+        destination.call(self, payload.dup)
+      rescue StandardError => e
+        # If something goes wrong in here, we don't want to break the application
+        # so we will rescue that and we'll just use standard warn.
+        Kernel.warn "Error while sending payload to destination (#{e.class}): #{e.message}"
+      end
+    end
 
   end
 end
