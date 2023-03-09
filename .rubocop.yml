@@ -1,0 +1,67 @@
+AllCops:
+  NewCops: enable
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*
+
+Metrics/ModuleLength:
+  Exclude:
+    - spec/**/*
+
+Style/StringConcatenation:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Naming/FileName:
+  Exclude:
+    - lib/klogger-logger.rb
+
+Metrics/MethodLength:
+  Max: 14
+
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+Layout/EmptyLinesAroundClassBody:
+  EnforcedStyle: empty_lines
+
+Style/AccessorGrouping:
+  EnforcedStyle: separated
+
+Layout/EmptyLinesAroundBlockBody:
+  EnforcedStyle: no_empty_lines
+
+Layout/EmptyLinesAroundModuleBody:
+  EnforcedStyle: empty_lines_except_namespace
+
+Layout/SpaceInLambdaLiteral:
+  EnforcedStyle: require_space
+
+Style/RegexpLiteral:
+  AllowInnerSlashes: true
+
+Naming/BlockForwarding:
+  EnforcedStyle: explicit
+
+Style/ConditionalAssignment:
+  EnforcedStyle: assign_inside_condition
+  IncludeTernaryExpressions: false
+
+Style/EmptyMethod:
+  EnforcedStyle: expanded
+
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
+
+Lint/UnusedMethodArgument:
+  AutoCorrect: false
+
+Lint/UnusedBlockArgument:
+  AutoCorrect: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  SafeAutoCorrect: true
