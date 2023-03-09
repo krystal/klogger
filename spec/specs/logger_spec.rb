@@ -6,6 +6,9 @@ require 'klogger/logger'
 module Klogger
 
   RSpec.describe Logger do
+    before { Timecop.freeze }
+    after { Timecop.return }
+
     let!(:output) { StringIO.new }
 
     context 'with a non-highlighting logger' do
@@ -14,36 +17,30 @@ module Klogger
       [:info, :debug, :warn, :error, :fatal].each do |severity|
         describe "##{severity}" do
           it 'logs a message' do
-            Timecop.freeze do
-              logger.public_send(severity, 'Hello, world!')
-              expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
-                                            logger: 'example', message: 'Hello, world!' }.to_json + "\n")
-            end
+            logger.public_send(severity, 'Hello, world!')
+            expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
+                                          logger: 'example', message: 'Hello, world!' }.to_json + "\n")
           end
 
           it 'logs structured data' do
-            Timecop.freeze do
-              logger.public_send(severity, foo: 'bar')
-              expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
-                                            logger: 'example', foo: 'bar' }.to_json + "\n")
-            end
+            logger.public_send(severity, foo: 'bar')
+            expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
+                                          logger: 'example', foo: 'bar' }.to_json + "\n")
           end
 
           it 'logs a message and structured data' do
-            Timecop.freeze do
-              logger.public_send(severity, 'Hello world', foo: 'bar')
-              expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
-                                            logger: 'example', message: 'Hello world', foo: 'bar' }.to_json + "\n")
-            end
+            logger.public_send(severity, 'Hello world', foo: 'bar')
+            expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
+                                          logger: 'example', message: 'Hello world',
+                                          foo: 'bar' }.to_json + "\n")
+          end
           end
 
           it 'includes any tags included for the logger before the message' do
             logger = described_class.new('example', destination: output, tags: { foo: 'bar' })
-            Timecop.freeze do
-              logger.public_send(severity, 'Hello, world!')
-              expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
-                                            logger: 'example', foo: 'bar', message: 'Hello, world!' }.to_json + "\n")
-            end
+            logger.public_send(severity, 'Hello, world!')
+            expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
+                                          logger: 'example', foo: 'bar', message: 'Hello, world!' }.to_json + "\n")
           end
 
           it 'includes tags specified on the instance group after the message' do
@@ -160,43 +157,37 @@ module Klogger
         it 'logs the exception details' do
           1 / 0
         rescue StandardError => e
-          Timecop.freeze do
-            logger.exception(e)
-            expect(output.string).to eq({ time: Time.now.to_s, severity: 'error',
-                                          logger: 'example',
-                                          exception: 'ZeroDivisionError',
-                                          exception_message: 'divided by 0',
-                                          backtrace: e.backtrace[0, 4].join("\n") }.to_json + "\n")
-          end
+          logger.exception(e)
+          expect(output.string).to eq({ time: Time.now.to_s, severity: 'error',
+                                        logger: 'example',
+                                        exception: 'ZeroDivisionError',
+                                        exception_message: 'divided by 0',
+                                        backtrace: e.backtrace[0, 4].join("\n") }.to_json + "\n")
         end
 
         it 'logs the exception details and a message' do
           1 / 0
         rescue StandardError => e
-          Timecop.freeze do
-            logger.exception(e, "Oops - that's silly")
-            expect(output.string).to eq({ time: Time.now.to_s, severity: 'error',
-                                          logger: 'example',
-                                          message: "Oops - that's silly",
-                                          exception: 'ZeroDivisionError',
-                                          exception_message: 'divided by 0',
-                                          backtrace: e.backtrace[0, 4].join("\n") }.to_json + "\n")
-          end
+          logger.exception(e, "Oops - that's silly")
+          expect(output.string).to eq({ time: Time.now.to_s, severity: 'error',
+                                        logger: 'example',
+                                        message: "Oops - that's silly",
+                                        exception: 'ZeroDivisionError',
+                                        exception_message: 'divided by 0',
+                                        backtrace: e.backtrace[0, 4].join("\n") }.to_json + "\n")
         end
 
         it 'logs the exception details and structured data' do
           1 / 0
         rescue StandardError => e
-          Timecop.freeze do
-            logger.exception(e, "Oops - that's silly", foo: 'bar')
-            expect(output.string).to eq({ time: Time.now.to_s, severity: 'error',
-                                          logger: 'example',
-                                          message: "Oops - that's silly",
-                                          exception: 'ZeroDivisionError',
-                                          exception_message: 'divided by 0',
-                                          backtrace: e.backtrace[0, 4].join("\n"),
-                                          foo: 'bar' }.to_json + "\n")
-          end
+          logger.exception(e, "Oops - that's silly", foo: 'bar')
+          expect(output.string).to eq({ time: Time.now.to_s, severity: 'error',
+                                        logger: 'example',
+                                        message: "Oops - that's silly",
+                                        exception: 'ZeroDivisionError',
+                                        exception_message: 'divided by 0',
+                                        backtrace: e.backtrace[0, 4].join("\n"),
+                                        foo: 'bar' }.to_json + "\n")
         end
       end
     end
@@ -208,10 +199,8 @@ module Klogger
         describe "##{severity}" do
           it 'logs a message' do
             expect(JSONHighlighter).to receive(:highlight).and_return('formatted-json')
-            Timecop.freeze do
-              logger.public_send(severity, 'Hello, world!')
-              expect(output.string).to eq("formatted-json\n")
-            end
+            logger.public_send(severity, 'Hello, world!')
+            expect(output.string).to eq("formatted-json\n")
           end
         end
 
@@ -225,12 +214,10 @@ module Klogger
       [:info, :debug, :warn, :error, :fatal].each do |severity|
         describe "##{severity}" do
           it 'logs a message in the correct format' do
-            Timecop.freeze do
-              logger.public_send(severity, 'Hello, world!')
-              expect(output.string).to eq(
-                "time: #{Time.now} severity: #{severity} logger: example message: Hello, world!\n"
-              )
-            end
+            logger.public_send(severity, 'Hello, world!')
+            expect(output.string).to eq(
+              "time: #{Time.now} severity: #{severity} logger: example message: Hello, world!\n"
+            )
           end
         end
 
