@@ -26,6 +26,7 @@ module Klogger
       @tags = tags
       @destinations = []
       @groups = Concurrent::ThreadLocalVar.new { [] }
+      @silenced = Concurrent::ThreadLocalVar.new { false }
       @include_group_ids = include_group_ids
 
       super(destination)
@@ -53,21 +54,21 @@ module Klogger
     end
 
     def silence!
-      @silence = true
+      @silenced.value = true
       yield if block_given?
     ensure
       unsilence! if block_given?
     end
 
     def unsilence!
-      @silence = false
+      @silenced.value = false
       yield if block_given?
     ensure
       silence! if block_given?
     end
 
     def silenced?
-      @silence == true
+      @silenced.value == true
     end
 
     def add_destination(destination)
