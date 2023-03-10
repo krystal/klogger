@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'klogger'
 require 'klogger/logger'
 
 module Klogger
@@ -140,6 +141,47 @@ module Klogger
                                               logger: 'example', message: 'Hello',
                                               level1: 'a', level3: 'c' }.to_json + "\n")
               end
+            end
+          end
+
+          it 'includes global group ids in the output if configured' do
+            Klogger.group(foo: 'bar') do
+              logger.public_send(severity, 'Hello')
+              expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
+                                            logger: 'example',
+                                            message: 'Hello',
+                                            foo: 'bar' }.to_json + "\n")
+            end
+          end
+
+          it 'can combine local and global group tags with global ones first' do
+            logger.group(fruit: 'apple') do
+              Klogger.group(foo: 'bar') do
+                logger.public_send(severity, 'Hello')
+                expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
+                                              logger: 'example',
+                                              message: 'Hello',
+                                              foo: 'bar', fruit: 'apple' }.to_json + "\n")
+              end
+            end
+          end
+
+          it 'adds global group data into any logger' do
+            output2 = StringIO.new
+            another_logger = described_class.new('another', destination: output2)
+            Klogger.group(foo: 'bar') do
+              logger.public_send(severity, 'Hello')
+              another_logger.public_send(severity, 'Hello')
+
+              expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
+                                            logger: 'example',
+                                            message: 'Hello',
+                                            foo: 'bar' }.to_json + "\n")
+
+              expect(output2.string).to eq({ time: Time.now.to_s, severity: severity,
+                                             logger: 'another',
+                                             message: 'Hello',
+                                             foo: 'bar' }.to_json + "\n")
             end
           end
 

@@ -6,6 +6,7 @@ require 'klogger/formatters/json'
 require 'klogger/formatters/simple'
 require 'klogger/formatters/go'
 require 'concurrent/atomic/thread_local_var'
+require 'klogger/group_set'
 
 module Klogger
   class Logger < ::Logger
@@ -25,7 +26,7 @@ module Klogger
       @name = name
       @tags = tags
       @destinations = []
-      @groups = Concurrent::ThreadLocalVar.new { [] }
+      @group_set = GroupSet.new
       @silenced = Concurrent::ThreadLocalVar.new { false }
       @include_group_ids = include_group_ids
 
@@ -46,11 +47,16 @@ module Klogger
       end
     end
 
-    def group(**tags)
-      @groups.value += [{ id: SecureRandom.hex(4), tags: tags }]
-      yield
-    ensure
-      @groups.value.pop
+    def group(**tags, &block)
+      @group_set.call(**tags, &block)
+    end
+
+    def add_group(**tags)
+      @group_set.add(**tags)
+    end
+
+    def pop_group
+      @group_set.pop
     end
 
     def silence!
@@ -129,9 +135,12 @@ module Klogger
 
     def add_groups_to_payload(payload)
       group_ids = []
-      @groups.value.each do |group|
-        payload.merge!(group[:tags])
-        group_ids << group[:id]
+
+      [Klogger.global_groups, @group_set].each do |group_set|
+        group_set.groups.each do |group|
+          payload.merge!(group[:tags])
+          group_ids << group[:id]
+        end
       end
 
       payload[:groups] = group_ids.join(',') if @include_group_ids

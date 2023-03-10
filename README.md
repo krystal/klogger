@@ -122,6 +122,25 @@ You'll notice in that example the comment `92b1b62c`. This is the group ID for t
 Klogger.new(name, include_group_ids: true)
 ```
 
+When executed like this groups will only apply to the logger in question. If you want to group messages from different loggers, you can use the `Klogger.group` method where groups and their data will apply to all Klogger loggers.
+
+```ruby
+logger1 = Klogger.new(:logger1)
+logger2 = Klogger.new(:logger2)
+Klogger.group(ip: '1.2.3.4') do
+  logger1.info('Hello world!') # will be tagged with ip=1.2.3.4
+  Klogger.group(user: 'user_abcdef')
+    logger2.info('Example') # will be tagged with ip=1.2.3.4 and user=user_abcdef
+  end
+end
+
+# If you can't use a block you can manually open and close a group but you'll need to be sure to close it
+# when you're finished.
+group_id = Klogger.global_groups.add(ip: '1.2.3.4')
+# ... do anything that you want - everything will be tagged as appropriate
+Klogger.global_groups.pop
+```
+
 ### Silencing
 
 Sometimes you don't want to log for a little while. You can use the `silence` method to temporarily disable logging.

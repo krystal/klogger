@@ -8,4 +8,12 @@ module Klogger
     Logger.new(*args, **kwargs)
   end
 
+  def self.global_groups
+    @global_groups ||= GroupSet.new
+  end
+
+  def self.group(**tags, &block)
+    global_groups.call(**tags, &block)
+  end
+
 end
