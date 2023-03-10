@@ -2,6 +2,14 @@
 
 This file contains all the latest changes and updates to Klogger.
 
+## 1.2.0
+
+### Features
+
+- change default formatter to 'go' ([e484ab](https://github.com/krystal/klogger/commit/e484ab39eb7fb6d1a6722d4e55227d00d703ba6e))
+- support for global-level groups ([9964b0](https://github.com/krystal/klogger/commit/9964b0818dbcb81e3ed0d488cb761d9a16ed59d1))
+- support for loggers without names ([4d89c8](https://github.com/krystal/klogger/commit/4d89c8fc84f16963e09c94c60c22fca24d0811c9))
+
 ## 1.1.0
 
 ### Features
