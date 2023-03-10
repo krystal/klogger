@@ -2,6 +2,16 @@
 
 This file contains all the latest changes and updates to Klogger.
 
+## 1.1.0
+
+### Features
+
+- group ids ([d7beda](https://github.com/krystal/klogger/commit/d7bedad43b2a2f508322d4f3d9e3bd82e22e9ccc))
+
+### Bug Fixes
+
+- thread-safety for silencing ([9c19a4](https://github.com/krystal/klogger/commit/9c19a4a5c33c5790c55ddcb25fc3aa758b86dadd))
+
 ## 1.0.1
 
 ### Bug Fixes
