@@ -113,6 +113,17 @@ module Klogger
             end
           end
 
+          it 'includes group ids in the output if configured' do
+            logger = described_class.new('example', destination: output, include_group_ids: true)
+            logger.group do
+              logger.group do
+                logger.public_send(severity, 'Hello')
+              end
+            end
+            parsed_json = JSON.parse(output.string)
+            expect(parsed_json['groups']).to match(/\A[a-f0-9]{8},[a-f0-9]{8}\z/)
+          end
+
           it 'ensures that nested group attributes are not present once the group has been called' do
             logger.group(level1: 'a') do
               logger.group(level2: 'b') do
@@ -250,14 +261,30 @@ module Klogger
         describe "##{severity}" do
           it 'calls the destination when logging' do
             called = false
-            destination = proc do |logger, payload|
+            destination = proc do |logger, payload, group_ids|
               called = true
               expect(logger).to eq logger
               expect(payload[:message]).to eq 'Hello, world!'
               expect(payload[:severity]).to eq severity.to_s
+              expect(group_ids).to eq []
             end
             logger.add_destination(destination)
             logger.public_send(severity, 'Hello, world!')
+            expect(called).to be true
+          end
+
+          it 'includes any group ids that were generated seperately' do
+            called = false
+            destination = proc do |logger, payload, group_ids|
+              called = true
+              expect(group_ids).to match [match(/\A[a-f0-9]{8}/), match(/\A[a-f0-9]{8}/)]
+            end
+            logger.add_destination(destination)
+            logger.group do
+              logger.group do
+                logger.public_send(severity, 'Hello, world!')
+              end
+            end
             expect(called).to be true
           end
         end

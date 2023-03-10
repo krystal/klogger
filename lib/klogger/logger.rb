@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'securerandom'
 require 'klogger/formatters/json'
 require 'klogger/formatters/simple'
 require 'klogger/formatters/go'
@@ -20,11 +21,12 @@ module Klogger
       go: Formatters::Go
     }.freeze
 
-    def initialize(name, destination: $stdout, formatter: :json, highlight: false, tags: {})
+    def initialize(name, destination: $stdout, formatter: :json, highlight: false, include_group_ids: false, tags: {})
       @name = name
       @tags = tags
       @destinations = []
-      @groups = Concurrent::ThreadLocalVar.new([])
+      @groups = Concurrent::ThreadLocalVar.new { [] }
+      @include_group_ids = include_group_ids
 
       super(destination)
       self.formatter = FORMATTERS[formatter].new(highlight: highlight)
@@ -44,7 +46,7 @@ module Klogger
     end
 
     def group(**tags)
-      @groups.value += [tags]
+      @groups.value += [{ id: SecureRandom.hex(4), tags: tags }]
       yield
     ensure
       @groups.value.pop
@@ -90,8 +92,8 @@ module Klogger
         message = block.call
       end
 
-      payload = create_payload(severity, message, tags)
-      call_destinations(payload)
+      payload, group_ids = create_payload(severity, message, tags)
+      call_destinations(payload, group_ids)
       super(severity, payload, progname, &block)
     end
 
@@ -110,14 +112,21 @@ module Klogger
       payload.delete(:message) if payload[:message].nil?
       payload.compact!
 
-      @groups.value.each { |group| payload.merge!(group) }
-      payload
+      group_ids = []
+      @groups.value.each do |group|
+        payload.merge!(group[:tags])
+        group_ids << group[:id]
+      end
+
+      payload[:groups] = group_ids.join(',') if @include_group_ids
+
+      [payload, group_ids]
     end
     # rubocop:enable Metrics/AbcSize
 
-    def call_destinations(payload)
+    def call_destinations(payload, group_ids)
       @destinations.each do |destination|
-        destination.call(self, payload.dup)
+        destination.call(self, payload.dup, group_ids)
       rescue StandardError => e
         # If something goes wrong in here, we don't want to break the application
         # so we will rescue that and we'll just use standard warn.
