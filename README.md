@@ -68,7 +68,7 @@ When you want to log something, you have the option of 5 severities (`debug`, `i
 logger.info("Hello world!")
 
 # To add additional tags to the line, you can do so by passing a hash.
-logger.info("Sending e-mail", receipient: "adam@example.com", subject: "Hello world!")
+logger.info("Sending e-mail", recipient: "adam@example.com", subject: "Hello world!")
 
 # The message is optional and you can just pass a hash too
 logger.info(ip_address: "1.2.3.4", method: "POST", path: "/login")
