@@ -14,7 +14,7 @@ module Klogger
     end
 
     def call_without_id(**tags)
-      add(_id: false, **tags)
+      add_without_id(**tags)
       yield
     ensure
       pop
@@ -27,10 +27,15 @@ module Klogger
       pop
     end
 
-    def add(_id: true, **tags)
-      id = _id ? SecureRandom.hex(4) : nil
+    def add(**tags)
+      id = SecureRandom.hex(4)
       @groups.value += [{ id: id, tags: tags }]
       id
+    end
+
+    def add_without_id(**tags)
+      @groups.value += [{ tags: tags }]
+      nil
     end
 
     def pop

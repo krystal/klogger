@@ -11,11 +11,22 @@ module Klogger
     describe '#add' do
       it 'adds a group' do
         group_set.add(foo: 'bar')
-        expect(group_set.groups.first).to match hash_including(id: match(/\A[a-f0-9]{8}\z/), tags: { foo: 'bar' })
+        expect(group_set.groups.first).to match({ id: match(/\A[a-f0-9]{8}\z/), tags: { foo: 'bar' } })
       end
 
       it 'returns the group id' do
         expect(group_set.add(foo: 'bar')).to match(/\A[a-f0-9]{8}\z/)
+      end
+    end
+
+    describe '#add_without_id' do
+      it 'adds a group' do
+        group_set.add_without_id(foo: 'bar')
+        expect(group_set.groups.first).to match({ tags: { foo: 'bar' } })
+      end
+
+      it 'returns nil' do
+        expect(group_set.add_without_id(foo: 'bar')).to be_nil
       end
     end
 
@@ -30,7 +41,7 @@ module Klogger
     describe '#call' do
       it 'creates a group, calls the block and then pops it' do
         group_set.call(foo: 'bar') do
-          expect(group_set.groups.first).to match hash_including(id: match(/\A[a-f0-9]{8}\z/), tags: { foo: 'bar' })
+          expect(group_set.groups.first).to match({ id: match(/\A[a-f0-9]{8}\z/), tags: { foo: 'bar' } })
         end
         expect(group_set.groups).to be_empty
       end
@@ -39,7 +50,7 @@ module Klogger
     describe '#call_without_id' do
       it 'creates a group, calls the block and then pops it' do
         group_set.call_without_id(foo: 'bar') do
-          expect(group_set.groups.first).to match hash_including(id: nil, tags: { foo: 'bar' })
+          expect(group_set.groups.first).to eq({ tags: { foo: 'bar' } })
         end
         expect(group_set.groups).to be_empty
       end
