@@ -24,7 +24,7 @@ Klogger is an opinionated logger for Ruby applications to allow consistent and s
 Add the gem to your Gemfile.
 
 ```ruby
-gem "klogger-logger", '~> 1.0'
+gem "klogger-logger", '~> 1.1'
 ```
 
 ## Usage
