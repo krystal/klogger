@@ -22,6 +22,9 @@ Naming/FileName:
 Metrics/MethodLength:
   Max: 14
 
+Metrics/ClassLength:
+  Max: 120
+
 Style/SymbolArray:
   EnforcedStyle: brackets
 
@@ -65,3 +68,6 @@ Lint/UnusedBlockArgument:
 Style/FrozenStringLiteralComment:
   Enabled: true
   SafeAutoCorrect: true
+
+Metrics/ParameterLists:
+  CountKeywordArgs: false

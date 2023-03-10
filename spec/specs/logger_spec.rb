@@ -275,7 +275,7 @@ module Klogger
 
           it 'includes any group ids that were generated seperately' do
             called = false
-            destination = proc do |logger, payload, group_ids|
+            destination = proc do |_logger, _payload, group_ids|
               called = true
               expect(group_ids).to match [match(/\A[a-f0-9]{8}/), match(/\A[a-f0-9]{8}/)]
             end

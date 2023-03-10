@@ -98,7 +98,6 @@ module Klogger
       super(severity, payload, progname, &block)
     end
 
-    # rubocop:disable Metrics/AbcSize
     def create_payload(severity, message, tags)
       payload = { time: Time.now.to_s, severity: LEVELS[severity]&.to_s, logger: @name }
       payload.merge!(@tags)
@@ -113,17 +112,10 @@ module Klogger
       payload.delete(:message) if payload[:message].nil?
       payload.compact!
 
-      group_ids = []
-      @groups.value.each do |group|
-        payload.merge!(group[:tags])
-        group_ids << group[:id]
-      end
-
-      payload[:groups] = group_ids.join(',') if @include_group_ids
+      group_ids = add_groups_to_payload(payload)
 
       [payload, group_ids]
     end
-    # rubocop:enable Metrics/AbcSize
 
     def call_destinations(payload, group_ids)
       @destinations.each do |destination|
@@ -133,6 +125,17 @@ module Klogger
         # so we will rescue that and we'll just use standard warn.
         Kernel.warn "Error while sending payload to destination (#{e.class}): #{e.message}"
       end
+    end
+
+    def add_groups_to_payload(payload)
+      group_ids = []
+      @groups.value.each do |group|
+        payload.merge!(group[:tags])
+        group_ids << group[:id]
+      end
+
+      payload[:groups] = group_ids.join(',') if @include_group_ids
+      group_ids
     end
 
   end
