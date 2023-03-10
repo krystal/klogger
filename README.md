@@ -141,6 +141,14 @@ group_id = Klogger.global_groups.add(ip: '1.2.3.4')
 Klogger.global_groups.pop
 ```
 
+Finally, you can use groups without IDs to simply add tags to all logs within the group using the `tagged` method.
+
+```ruby
+logger.tagged(name: 'steve') do
+  logger.info("Download starting")
+end
+```
+
 ### Silencing
 
 Sometimes you don't want to log for a little while. You can use the `silence` method to temporarily disable logging.

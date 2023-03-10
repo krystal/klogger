@@ -16,4 +16,8 @@ module Klogger
     global_groups.call(**tags, &block)
   end
 
+  def self.tagged(**tags, &block)
+    global_groups.call_without_id(**tags, &block)
+  end
+
 end

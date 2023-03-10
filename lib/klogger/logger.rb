@@ -59,6 +59,10 @@ module Klogger
       @group_set.pop
     end
 
+    def tagged(**tags, &block)
+      @group_set.call_without_id(**tags, &block)
+    end
+
     def silence!
       @silenced.value = true
       yield if block_given?
@@ -140,7 +144,7 @@ module Klogger
       [Klogger.global_groups, @group_set].each do |group_set|
         group_set.groups.each do |group|
           payload.merge!(group[:tags])
-          group_ids << group[:id]
+          group_ids << group[:id] if group[:id]
         end
       end
 

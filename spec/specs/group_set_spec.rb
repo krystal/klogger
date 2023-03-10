@@ -35,6 +35,15 @@ module Klogger
         expect(group_set.groups).to be_empty
       end
     end
+
+    describe '#call_without_id' do
+      it 'creates a group, calls the block and then pops it' do
+        group_set.call_without_id(foo: 'bar') do
+          expect(group_set.groups.first).to match hash_including(id: nil, tags: { foo: 'bar' })
+        end
+        expect(group_set.groups).to be_empty
+      end
+    end
   end
 
 end
