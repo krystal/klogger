@@ -13,7 +13,7 @@ module Klogger
     let!(:output) { StringIO.new }
 
     context 'with a non-highlighting JSON logger with a name' do
-      subject(:logger) { described_class.new('example', destination: output) }
+      subject(:logger) { described_class.new('example', destination: output, formatter: :json) }
 
       [:info, :debug, :warn, :error, :fatal].each do |severity|
         describe "##{severity}" do
@@ -56,7 +56,7 @@ module Klogger
           end
 
           it 'includes any tags included for the logger before the message' do
-            logger = described_class.new('example', destination: output, tags: { foo: 'bar' })
+            logger = described_class.new('example', destination: output, formatter: :json, tags: { foo: 'bar' })
             logger.public_send(severity, 'Hello, world!')
             expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
                                           logger: 'example', foo: 'bar', message: 'Hello, world!' }.to_json + "\n")
@@ -115,7 +115,7 @@ module Klogger
           end
 
           it 'includes group ids in the output if configured' do
-            logger = described_class.new('example', destination: output, include_group_ids: true)
+            logger = described_class.new('example', destination: output, include_group_ids: true, formatter: :json)
             logger.group do
               logger.group do
                 logger.public_send(severity, 'Hello')
@@ -168,7 +168,7 @@ module Klogger
 
           it 'adds global group data into any logger' do
             output2 = StringIO.new
-            another_logger = described_class.new('another', destination: output2)
+            another_logger = described_class.new('another', destination: output2, formatter: :json)
             Klogger.group(foo: 'bar') do
               logger.public_send(severity, 'Hello')
               another_logger.public_send(severity, 'Hello')
@@ -264,7 +264,7 @@ module Klogger
     end
 
     context 'with a highlighting logger' do
-      subject(:logger) { described_class.new('example', destination: output, highlight: true) }
+      subject(:logger) { described_class.new('example', destination: output, formatter: :json, highlight: true) }
 
       [:info, :debug, :warn, :error, :fatal].each do |severity|
         describe "##{severity}" do
@@ -296,8 +296,25 @@ module Klogger
       end
     end
 
+    context 'with go formatter with no highlighting' do
+      subject(:logger) { described_class.new('example', destination: output, formatter: :go) }
+
+      [:info, :debug, :warn, :error, :fatal].each do |severity|
+        describe "##{severity}" do
+          it 'logs a message in the correct format' do
+            logger.public_send(severity, 'Hello, world!')
+            expect(output.string).to eq(
+              "#{Time.now} #{severity.to_s.upcase.ljust(6, ' ')} Hello, world! logger=example\n"
+            )
+          end
+        end
+
+        # .. no additional tests added here because they're covered above.
+      end
+    end
+
     context 'without a name' do
-      subject(:logger) { described_class.new(destination: output) }
+      subject(:logger) { described_class.new(destination: output, formatter: :json) }
 
       [:info, :debug, :warn, :error, :fatal].each do |severity|
         describe "##{severity}" do

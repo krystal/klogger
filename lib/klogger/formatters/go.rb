@@ -15,7 +15,7 @@ module Klogger
         string = String.new
         string << time.strftime('%Y-%m-%d %H:%M:%S %z')
         string << ' '
-        string << colorize(payload[:severity].ljust(8, ' ').upcase, payload[:severity].to_sym)
+        string << colorize(payload[:severity].ljust(7, ' ').upcase, payload[:severity].to_sym)
         if payload[:message]
           string << colorize(payload[:message], :white)
           string << ' '
@@ -27,7 +27,7 @@ module Klogger
           string << colorize(sanitize_value(value), :white)
           string << ' '
         end
-        string + "\n"
+        string.strip + "\n"
       end
       # rubocop:enable Metrics/AbcSize
       # rubocop:enable Metrics/MethodLength

@@ -22,7 +22,7 @@ module Klogger
       go: Formatters::Go
     }.freeze
 
-    def initialize(name = nil, destination: $stdout, formatter: :json, highlight: false, include_group_ids: false,
+    def initialize(name = nil, destination: $stdout, formatter: :go, highlight: false, include_group_ids: false,
                    tags: {})
       @name = name
       @tags = tags
