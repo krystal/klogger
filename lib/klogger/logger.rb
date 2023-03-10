@@ -22,14 +22,14 @@ module Klogger
       go: Formatters::Go
     }.freeze
 
-    def initialize(name, destination: $stdout, formatter: :json, highlight: false, include_group_ids: false, tags: {})
+    def initialize(name = nil, destination: $stdout, formatter: :json, highlight: false, include_group_ids: false,
+                   tags: {})
       @name = name
       @tags = tags
       @destinations = []
       @group_set = GroupSet.new
       @silenced = Concurrent::ThreadLocalVar.new { false }
       @include_group_ids = include_group_ids
-
       super(destination)
       self.formatter = FORMATTERS[formatter].new(highlight: highlight)
     end
@@ -105,7 +105,8 @@ module Klogger
     end
 
     def create_payload(severity, message, tags)
-      payload = { time: Time.now.to_s, severity: LEVELS[severity]&.to_s, logger: @name }
+      payload = { time: Time.now.to_s, severity: LEVELS[severity]&.to_s }
+      payload[:logger] = @name if @name
       payload.merge!(@tags)
 
       if message.is_a?(Hash)

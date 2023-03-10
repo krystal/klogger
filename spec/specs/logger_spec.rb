@@ -12,7 +12,7 @@ module Klogger
 
     let!(:output) { StringIO.new }
 
-    context 'with a non-highlighting logger' do
+    context 'with a non-highlighting JSON logger with a name' do
       subject(:logger) { described_class.new('example', destination: output) }
 
       [:info, :debug, :warn, :error, :fatal].each do |severity|
@@ -289,6 +289,22 @@ module Klogger
             expect(output.string).to eq(
               "time: #{Time.now} severity: #{severity} logger: example message: Hello, world!\n"
             )
+          end
+        end
+
+        # .. no additional tests added here because they're covered above.
+      end
+    end
+
+    context 'without a name' do
+      subject(:logger) { described_class.new(destination: output) }
+
+      [:info, :debug, :warn, :error, :fatal].each do |severity|
+        describe "##{severity}" do
+          it 'logs a message' do
+            logger.public_send(severity, 'Hello, world!')
+            expect(output.string).to eq({ time: Time.now.to_s, severity: severity,
+                                          message: 'Hello, world!' }.to_json + "\n")
           end
         end
 
