@@ -2,6 +2,12 @@
 
 This file contains all the latest changes and updates to Klogger.
 
+## 1.3.0
+
+### Features
+
+- add group with ID method ([0bd5e5](https://github.com/krystal/klogger/commit/0bd5e590b8ffe055de98403d8ddf9d597dba5208))
+
 ## 1.2.0
 
 ### Features
