@@ -2,11 +2,14 @@
 
 require 'logger'
 require 'securerandom'
+
+require 'concurrent/atomic/thread_local_var'
+
 require 'klogger/formatters/json'
 require 'klogger/formatters/simple'
 require 'klogger/formatters/go'
-require 'concurrent/atomic/thread_local_var'
 require 'klogger/group_set'
+require 'klogger/version'
 
 module Klogger
   class Logger < ::Logger

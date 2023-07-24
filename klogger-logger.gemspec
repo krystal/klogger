@@ -10,7 +10,8 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.6'
   s.homepage      = 'https://github.com/krystal/klogger'
   s.version       = Klogger::VERSION
-  s.files         = Dir.glob('{lib}/**/*')
+  s.files         = Dir.glob(File.join('{lib}', '**', '*')) +
+                    Dir['{README.*,*LICENSE*,VERSION}']
   s.require_paths = ['lib']
   s.authors       = ['Adam Cooke']
   s.email         = ['adam@krystal.uk']
