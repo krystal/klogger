@@ -35,10 +35,14 @@ module Klogger
     end
 
     def exception(exception, message = nil, **tags)
-      error({ message: message,
-              exception: exception.class.name,
-              exception_message: exception.message,
-              backtrace: exception.backtrace[0, 4].join("\n") }.merge(tags))
+      error(
+        **{
+          message: message,
+          exception: exception.class.name,
+          exception_message: exception.message,
+          backtrace: exception.backtrace[0, 4].join("\n")
+        }.merge(tags)
+      )
     end
 
     LEVELS.each do |level|
