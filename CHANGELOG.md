@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Klogger.
 
+## [1.3.2](https://github.com/krystal/klogger/compare/v1.3.1...v1.3.2) (2023-07-25)
+
+
+### Bug Fixes
+
+* **deps:** resolve deprecation warning under Ruby 2.7 ([#1](https://github.com/krystal/klogger/issues/1)) ([3f1e6ba](https://github.com/krystal/klogger/commit/3f1e6ba066705adb39670e686bb8713c5f487e79))
+
 ## 1.3.1
 
 ## 1.3.0
