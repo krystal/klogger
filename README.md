@@ -149,7 +149,7 @@ logger.tagged(name: 'steve') do
 end
 ```
 
-## Tagged Loggers
+### Tagged Loggers
 
 If you wish to apply tags to a series of log entries but you don't wish to use blocks, you can create a "sub" logger which will always include those tags for all messages sent to it.
 
