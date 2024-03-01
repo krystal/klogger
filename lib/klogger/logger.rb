@@ -25,7 +25,11 @@ module Klogger
       go: Formatters::Go
     }.freeze
 
-    def initialize(name = nil, destination: $stdout, formatter: :go, highlight: false, include_group_ids: false,
+    def initialize(name = nil,
+                   destination: $stdout,
+                   formatter: :go,
+                   highlight: false,
+                   include_group_ids: false,
                    tags: {})
       @name = name
       @tags = tags
@@ -39,12 +43,10 @@ module Klogger
 
     def exception(exception, message = nil, **tags)
       error(
-        **{
-          message: message,
-          exception: exception.class.name,
-          exception_message: exception.message,
-          backtrace: exception.backtrace[0, 4].join("\n")
-        }.merge(tags)
+        message: message,
+        exception: exception.class.name,
+        exception_message: exception.message,
+        backtrace: exception.backtrace[0, 4].join("\n"), **tags
       )
     end
 
@@ -94,6 +96,10 @@ module Klogger
 
     def remove_destination(destination)
       @destinations.delete(destination)
+    end
+
+    def create_tagged_logger(**tags)
+      TaggedLogger.new(self, **tags)
     end
 
     private

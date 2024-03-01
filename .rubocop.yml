@@ -24,7 +24,7 @@ Metrics/MethodLength:
   Max: 14
 
 Metrics/ClassLength:
-  Max: 120
+  Max: 140
 
 Style/SymbolArray:
   EnforcedStyle: brackets

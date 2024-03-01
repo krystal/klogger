@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'klogger/logger'
+require 'klogger/tagged_logger'
 
 module Klogger
 

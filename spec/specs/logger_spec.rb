@@ -366,6 +366,14 @@ module Klogger
       end
     end
 
+    describe '#create_tagged_logger' do
+      subject(:logger) { described_class.new('example', destination: output, formatter: :json) }
+
+      it 'returns a new tagged logger' do
+        expect(logger.create_tagged_logger(tag: 'tag1')).to be_a Klogger::TaggedLogger
+      end
+    end
+
     describe '#add_destination' do
       subject(:logger) { described_class.new('example', destination: output) }
 

@@ -135,7 +135,7 @@ Klogger.group(ip: '1.2.3.4') do
 end
 
 # If you can't use a block you can manually open and close a group but you'll need to be sure to close it
-# when you're finished.
+# when you're finished.
 group_id = Klogger.global_groups.add(ip: '1.2.3.4')
 # ... do anything that you want - everything will be tagged as appropriate
 Klogger.global_groups.pop
@@ -147,6 +147,16 @@ Finally, you can use groups without IDs to simply add tags to all logs within th
 logger.tagged(name: 'steve') do
   logger.info("Download starting")
 end
+```
+
+## Tagged Loggers
+
+If you wish to apply tags to a series of log entries but you don't wish to use blocks, you can create a "sub" logger which will always include those tags for all messages sent to it.
+
+```ruby
+logger = Klogger.new(:logger)
+tagged_logger = logger.create_tagged_logger(tag: 'my-tag')
+tagged_logger.info "Hello world!" # => will be tagged with tag=my-tag
 ```
 
 ### Silencing
