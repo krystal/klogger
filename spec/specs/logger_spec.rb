@@ -3,6 +3,7 @@
 require 'spec_helper'
 require 'klogger'
 require 'klogger/logger'
+require_relative '../helpers/fake_destination'
 
 module Klogger
 
@@ -392,6 +393,24 @@ module Klogger
         logger.add_destination(destination)
         logger.remove_destination(destination)
         expect(logger.destinations).to_not include destination
+      end
+    end
+
+    describe '#with_destination' do
+      subject(:logger) { described_class.new('example', destination: output) }
+      let(:fake_destination) { FakeDestination.new }
+
+      it 'sends log output to the given destination for the duration of the block' do
+        logger.info 'line1'
+        logger.with_destination(fake_destination) do
+          logger.info 'line2'
+          logger.info 'line3'
+        end
+        logger.info 'line4'
+        expect(fake_destination.lines).to match [
+          [logger, hash_including(message: 'line2'), []],
+          [logger, hash_including(message: 'line3'), []]
+        ]
       end
     end
   end

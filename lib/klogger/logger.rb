@@ -36,6 +36,7 @@ module Klogger
       @destinations = []
       @group_set = GroupSet.new
       @silenced = Concurrent::ThreadLocalVar.new { false }
+      @block_destinations = Concurrent::ThreadLocalVar.new { [] }
       @include_group_ids = include_group_ids
       super(destination)
       self.formatter = FORMATTERS[formatter].new(highlight: highlight)
@@ -98,6 +99,13 @@ module Klogger
       @destinations.delete(destination)
     end
 
+    def with_destination(destination)
+      @block_destinations.value << destination
+      yield
+    ensure
+      @block_destinations.value.delete(destination)
+    end
+
     def create_tagged_logger(**tags)
       TaggedLogger.new(self, **tags)
     end
@@ -142,7 +150,7 @@ module Klogger
     end
 
     def call_destinations(payload, group_ids)
-      @destinations.each do |destination|
+      (@destinations + @block_destinations.value).each do |destination|
         destination.call(self, payload.dup, group_ids)
       rescue StandardError => e
         # If something goes wrong in here, we don't want to break the application

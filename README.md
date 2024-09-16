@@ -78,7 +78,7 @@ logger.info { "Hello world!" }
 logger.info('Result of 1 + 1') { 1 + 1 } # Logs with a message of "Result: 2"
 ```
 
-### Loggging exceptions
+### Logging exceptions
 
 Exceptions happen and when they do, you want to know about them. Klogger provides a helper method to log exceptions. These will automatically be logged with the `error` severity.
 
@@ -197,4 +197,9 @@ end
 # Create a logger and add the destination
 logger = Klogger.new(name)
 logger.add_destination(GraylogDestination.new('graylog.example.com', 12201))
+
+# If you only want to send certain data to another block, you can do so
+logger.with_destination(other_destination) do
+  # ...
+end
 ```
