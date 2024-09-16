@@ -2,6 +2,23 @@
 
 This file contains all the latest changes and updates to Klogger.
 
+## [1.5.0](https://github.com/krystal/klogger/compare/v1.4.0...v1.5.0) (2024-09-16)
+
+
+### Features
+
+* adds Logger#with_destination to log blocks to custom destinations ([ac6fe90](https://github.com/krystal/klogger/commit/ac6fe90a8cce7257e0e9941a3db31430f9f99a70))
+
+
+### Styles
+
+* fixes rubocop offence ([18281db](https://github.com/krystal/klogger/commit/18281dbf1d24fe952247905b926b8845ceaf7fd7))
+
+
+### Miscellaneous Chores
+
+* fixes release-please to include all types in changelog ([7f1dcc7](https://github.com/krystal/klogger/commit/7f1dcc74f6dfb544c31b149ad7ceaff83bcac42d))
+
 ## [1.4.0](https://github.com/krystal/klogger/compare/v1.3.2...v1.4.0) (2024-03-01)
 
 
