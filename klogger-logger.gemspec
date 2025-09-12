@@ -16,8 +16,8 @@ Gem::Specification.new do |s|
   s.authors       = ['Adam Cooke']
   s.email         = ['adam@krystal.uk']
   s.licenses      = ['MIT']
+  s.add_dependency('coderay', '~> 1.1')
   s.add_dependency('concurrent-ruby', '>= 1.0', '< 2.0')
   s.add_dependency('json')
-  s.add_dependency('rouge', '>= 3.30', '< 5.0')
 end
 # rubocop:enable Gemspec/RequireMFA
