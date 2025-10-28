@@ -15,7 +15,7 @@
 Klogger is an opinionated logger for Ruby applications to allow consistent and structured logging.
 
 - Output can be sent to STDOUT or a file. The logger is backed by the standard Ruby `Logger` class.
-- Ouput can be presented in various formats.
+- Output can be presented in various formats.
 - Output can be highlighted with appropriate colours based on severity (optional).
 - Additional destinations can easily be added for shipping log data to other services.
 
@@ -29,7 +29,7 @@ gem "klogger-logger", '~> 1.1'
 
 ## Usage
 
-This shows some typical usage of the logger along with example output. The `Klogger::Logger` instance will output to STDOUT by default but can be redirectly.
+This shows some typical usage of the logger along with example output. The `Klogger::Logger` instance will output to STDOUT by default but can be redirected.
 
 ### Setting up a logger
 
@@ -41,7 +41,7 @@ To begin, you need an instance of your logger. Loggers are thread-safe so you ca
 Klogger.new(name)
 
 # You can customise where log output goes using the destination argument. You can provide a device
-# that response to write & close or a path to a file. The same as Ruby's logger class.
+# that responds to write & close or a path to a file. The same as Ruby's logger class.
 Klogger.new(name, destination: $stderr)
 Klogger.new(name, destination: 'log/events.log')
 Klogger.new(name, destination: StringIO.new)
@@ -61,7 +61,7 @@ Klogger.new(name, tags: { app: 'example-app' })
 
 ### Logging
 
-When you want to log something, you have the option of 5 severities (`debug`, `info`, `warn`, `error` and `fatal`). For this example, we'll use `info` but it is interchangable with any of the other severities.
+When you want to log something, you have the option of 5 severities (`debug`, `info`, `warn`, `error` and `fatal`). For this example, we'll use `info` but it is interchangeable with any of the other severities.
 
 ```ruby
 # The most basic way to log is to provide a message.
@@ -84,7 +84,7 @@ Exceptions happen and when they do, you want to know about them. Klogger provide
 
 ```ruby
 begin
-  # Do somethign bad
+  # Do something bad
 rescue => e
   # Just log the exception
   logger.exception(e)
@@ -189,7 +189,7 @@ class GraylogDestination
 
   def call(logger, payload, group_ids)
     message = payload.delete(:message)
-    @notifer.notify!(facility: "my-app", short_message: message, group_ids: group_ids, **payload)
+    @notifier.notify!(facility: "my-app", short_message: message, group_ids: group_ids, **payload)
   end
 
 end
